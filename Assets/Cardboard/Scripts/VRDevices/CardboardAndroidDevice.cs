@@ -15,60 +15,70 @@
 
 using UnityEngine;
 
-public class CardboardAndroidDevice : BaseCardboardDevice {
-  private static AndroidJavaObject activityListener;
+public class CardboardAndroidDevice : BaseCardboardDevice
+{
+	private static AndroidJavaObject activityListener;
 
-  public override void Init() {
-    base.Init();
-    ConnectToActivity();
-  }
+	public override void Init ()
+	{
+		base.Init ();
+		ConnectToActivity ();
+	}
 
-  protected override void ConnectToActivity() {
-    base.ConnectToActivity();
-    if (androidActivity != null && activityListener == null) {
-      TextAsset button = Resources.Load<TextAsset>("CardboardSettingsButton.png");
-      activityListener = Create("com.google.vr.platform.unity.UnityVrActivityListener",
+	protected override void ConnectToActivity ()
+	{
+		base.ConnectToActivity ();
+		if (androidActivity != null && activityListener == null) {
+			TextAsset button = Resources.Load<TextAsset> ("CardboardSettingsButton.png");
+			activityListener = Create ("com.google.vr.platform.unity.UnityVrActivityListener",
                                 button.bytes);
-    }
-  }
+		}
+	}
 
-  public override void SetVRModeEnabled(bool enabled) {
-    CallObjectMethod(activityListener, "setVRModeEnabled", enabled);
-  }
+	public override void SetVRModeEnabled (bool enabled)
+	{
+		CallObjectMethod (activityListener, "setVRModeEnabled", enabled);
+	}
 
-  public override void SetSettingsButtonEnabled(bool enabled) {
-    CallObjectMethod(activityListener, "setSettingsButtonEnabled", enabled);
-  }
+	public override void SetSettingsButtonEnabled (bool enabled)
+	{
+		CallObjectMethod (activityListener, "setSettingsButtonEnabled", enabled);
+	}
 
-  public override void SetTapIsTrigger(bool enabled) {
-    CallObjectMethod(activityListener, "setTapIsTrigger", enabled);
-  }
+	public override void SetTapIsTrigger (bool enabled)
+	{
+		CallObjectMethod (activityListener, "setTapIsTrigger", enabled);
+	}
 
-  public override void SetTouchCoordinates(int x, int y) {
-    CallObjectMethod(activityListener, "setTouchCoordinates", x, y);
-  }
+	public override void SetTouchCoordinates (int x, int y)
+	{
+		CallObjectMethod (activityListener, "setTouchCoordinates", x, y);
+	}
 
-  public override bool SetDefaultDeviceProfile(System.Uri uri) {
-    bool result = false;
-    CallObjectMethod(ref result, activityListener, "setDefaultDeviceProfile", uri.ToString());
-    return result;
-  }
+	public override bool SetDefaultDeviceProfile (System.Uri uri)
+	{
+		bool result = false;
+		CallObjectMethod (ref result, activityListener, "setDefaultDeviceProfile", uri.ToString ());
+		return result;
+	}
 
-  public override void ShowSettingsDialog() {
-    CallObjectMethod(activityListener, "launchConfigureActivity");
-  }
+	public override void ShowSettingsDialog ()
+	{
+		CallObjectMethod (activityListener, "launchConfigureActivity");
+	}
 
-  protected override void ProcessEvents() {
-    base.ProcessEvents();
-    if (!Cardboard.SDK.TapIsTrigger) {
-      if (triggered) {
-        CallObjectMethod(activityListener, "injectSingleTap");
-      }
-      if (tilted) {
-        CallObjectMethod(activityListener, "injectKeyPress", 111);  // Escape key.
-      }
-    }
-  }
+	protected override void ProcessEvents ()
+	{
+		base.ProcessEvents ();
+		if (!Cardboard.SDK.TapIsTrigger) {
+			if (triggered) {
+				CallObjectMethod (activityListener, "injectSingleTap");
+			}
+			if (tilted) {
+				CallObjectMethod (activityListener, "injectKeyPress", 111);  // Escape key.
+			}
+		}
+	}
 }
 
 #endif

@@ -16,73 +16,80 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public abstract class BaseAndroidDevice : BaseVRDevice {
-  protected AndroidJavaObject androidActivity;
+public abstract class BaseAndroidDevice : BaseVRDevice
+{
+	protected AndroidJavaObject androidActivity;
 
-  public override bool SupportsNativeDistortionCorrection(List<string> diagnostics) {
-    bool support = base.SupportsNativeDistortionCorrection(diagnostics);
-    if (androidActivity == null) {
-      diagnostics.Add("Cannot access Activity");
-    }
-    return support;
-  }
+	public override bool SupportsNativeDistortionCorrection (List<string> diagnostics)
+	{
+		bool support = base.SupportsNativeDistortionCorrection (diagnostics);
+		if (androidActivity == null) {
+			diagnostics.Add ("Cannot access Activity");
+		}
+		return support;
+	}
 
-  public override void Destroy() {
-    if (androidActivity != null) {
-      androidActivity.Dispose();
-      androidActivity = null;
-    }
-    base.Destroy();
-  }
+	public override void Destroy ()
+	{
+		if (androidActivity != null) {
+			androidActivity.Dispose ();
+			androidActivity = null;
+		}
+		base.Destroy ();
+	}
 
-  protected virtual void ConnectToActivity() {
-    try {
-      using (AndroidJavaClass player = new AndroidJavaClass("com.unity3d.player.UnityPlayer")) {
-        androidActivity = player.GetStatic<AndroidJavaObject>("currentActivity");
-      }
-    } catch (AndroidJavaException e) {
-      androidActivity = null;
-      Debug.LogError("Exception while connecting to the Activity: " + e);
-    }
-  }
+	protected virtual void ConnectToActivity ()
+	{
+		try {
+			using (AndroidJavaClass player = new AndroidJavaClass("com.unity3d.player.UnityPlayer")) {
+				androidActivity = player.GetStatic<AndroidJavaObject> ("currentActivity");
+			}
+		} catch (AndroidJavaException e) {
+			androidActivity = null;
+			Debug.LogError ("Exception while connecting to the Activity: " + e);
+		}
+	}
 
-  protected AndroidJavaObject Create(string className, params object[] args) {
-    try {
-      return new AndroidJavaObject(className, args);
-    } catch (AndroidJavaException e) {
-      Debug.LogError("Exception creating object " + className + ": " + e);
-      return null;
-    }
-  }
+	protected AndroidJavaObject Create (string className, params object[] args)
+	{
+		try {
+			return new AndroidJavaObject (className, args);
+		} catch (AndroidJavaException e) {
+			Debug.LogError ("Exception creating object " + className + ": " + e);
+			return null;
+		}
+	}
 
-  protected static bool CallObjectMethod(AndroidJavaObject jo, string name, params object[] args) {
-    if (jo == null) {
-      Debug.LogError("Object is null when calling method " + name);
-      return false;
-    }
-    try {
-      jo.Call(name, args);
-      return true;
-    } catch (AndroidJavaException e) {
-      Debug.LogError("Exception calling method " + name + ": " + e);
-      return false;
-    }
-  }
+	protected static bool CallObjectMethod (AndroidJavaObject jo, string name, params object[] args)
+	{
+		if (jo == null) {
+			Debug.LogError ("Object is null when calling method " + name);
+			return false;
+		}
+		try {
+			jo.Call (name, args);
+			return true;
+		} catch (AndroidJavaException e) {
+			Debug.LogError ("Exception calling method " + name + ": " + e);
+			return false;
+		}
+	}
 
-  protected static bool CallObjectMethod<T>(ref T result, AndroidJavaObject jo, string name,
-                                            params object[] args) {
-    if (jo == null) {
-      Debug.LogError("Object is null when calling method " + name);
-      return false;
-    }
-    try {
-      result = jo.Call<T>(name, args);
-      return true;
-    } catch (AndroidJavaException e) {
-      Debug.LogError("Exception calling method " + name + ": " + e);
-      return false;
-    }
-  }
+	protected static bool CallObjectMethod<T> (ref T result, AndroidJavaObject jo, string name,
+                                            params object[] args)
+	{
+		if (jo == null) {
+			Debug.LogError ("Object is null when calling method " + name);
+			return false;
+		}
+		try {
+			result = jo.Call<T> (name, args);
+			return true;
+		} catch (AndroidJavaException e) {
+			Debug.LogError ("Exception calling method " + name + ": " + e);
+			return false;
+		}
+	}
 }
 
 #endif
